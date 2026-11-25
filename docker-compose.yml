@@ -1,0 +1,37 @@
+services:
+  app:
+    build: .
+    container_name: proyecto2-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: production
+      DATABASE_PATH: /app/data/items.db
+      OTEL_SERVICE_NAME: proyecto2-app
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
+      OTEL_EXPORTER_OTLP_HEADERS: ${OTEL_EXPORTER_OTLP_HEADERS:-}
+    volumes:
+      - app_data:/app/data
+    depends_on:
+      - otel-collector
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.114.0
+    container_name: proyecto2-otel-collector
+    restart: unless-stopped
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./infra/otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+      - /proc:/hostfs/proc:ro
+      - /sys:/hostfs/sys:ro
+      - /:/hostfs:ro
+    environment:
+      OPENOBSERVE_OTLP_ENDPOINT: ${OPENOBSERVE_OTLP_ENDPOINT:-http://localhost:5080/api/default}
+      OPENOBSERVE_AUTH_HEADER: ${OPENOBSERVE_AUTH_HEADER:-}
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+
+volumes:
+  app_data:

@@ -1,0 +1,46 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+  hostmetrics:
+    collection_interval: 15s
+    root_path: /hostfs
+    scrapers:
+      cpu: {}
+      memory: {}
+      network: {}
+      disk: {}
+      filesystem: {}
+      load: {}
+
+processors:
+  batch:
+    timeout: 5s
+  resourcedetection:
+    detectors: [env, system]
+
+exporters:
+  otlphttp/openobserve:
+    endpoint: ${env:OPENOBSERVE_OTLP_ENDPOINT}
+    headers:
+      Authorization: ${env:OPENOBSERVE_AUTH_HEADER}
+      stream-name: default
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [resourcedetection, batch]
+      exporters: [otlphttp/openobserve]
+    metrics:
+      receivers: [otlp, hostmetrics]
+      processors: [resourcedetection, batch]
+      exporters: [otlphttp/openobserve]
+    logs:
+      receivers: [otlp]
+      processors: [resourcedetection, batch]
+      exporters: [otlphttp/openobserve]

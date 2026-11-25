@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proyecto Parcial 2 - Gestión y Observabilidad</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div>
+      <h1>Panel de Operaciones CI/CD</h1>
+      <p class="subtitle">FastAPI + OpenTelemetry + OpenObserve</p>
+    </div>
+    <div class="status-badge" data-testid="health-badge" id="health-badge">
+      Estado: Verificando...
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Registrar Elemento</h2>
+      <form id="item-form" data-testid="item-form">
+        <div class="field">
+          <label for="title">Título</label>
+          <input id="title" name="title" data-testid="input-title" type="text" placeholder="Ej. Despliegue v1.0" required />
+        </div>
+        <div class="field">
+          <label for="description">Descripción</label>
+          <input id="description" name="description" data-testid="input-description" type="text" placeholder="Detalle breve" />
+        </div>
+        <div class="field">
+          <label for="status">Estado</label>
+          <select id="status" name="status" data-testid="select-status">
+            <option value="pending">Pendiente</option>
+            <option value="in_progress">En progreso</option>
+            <option value="done">Completado</option>
+          </select>
+        </div>
+        <div class="actions">
+          <button type="submit" data-testid="submit-btn">Agregar</button>
+          <button type="button" id="simulate-error-btn" data-testid="simulate-error-btn" class="danger-outline">
+            Simular Error 500
+          </button>
+        </div>
+      </form>
+      <p id="feedback" data-testid="feedback" class="feedback" aria-live="polite"></p>
+    </section>
+
+    <section class="card">
+      <div class="list-header">
+        <h2>Elementos Registrados</h2>
+        <span id="items-count" data-testid="items-count">0 elementos</span>
+      </div>
+      <ul id="items-list" data-testid="items-list" class="items-list"></ul>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
