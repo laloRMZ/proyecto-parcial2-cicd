@@ -3,56 +3,96 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Proyecto Parcial 2 - Gestión y Observabilidad</title>
+  <title>Proyecto Parcial 2 - Login y CRUD Users</title>
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
   <header class="header">
     <div>
-      <h1>Panel de Operaciones CI/CD</h1>
-      <p class="subtitle">FastAPI + OpenTelemetry + OpenObserve</p>
+      <h1>Sistema de Gestión de Usuarios</h1>
+      <p class="subtitle">FastAPI + SQLite + OpenTelemetry + OpenObserve</p>
     </div>
-    <div class="status-badge" data-testid="health-badge" id="health-badge">
-      Estado: Verificando...
+    <div class="header-right">
+      <div class="status-badge" data-testid="health-badge" id="health-badge">
+        Estado: Verificando...
+      </div>
+      <button type="button" id="logout-btn" data-testid="logout-btn" class="secondary-outline hidden">
+        Cerrar Sesión
+      </button>
     </div>
   </header>
 
   <main class="container">
-    <section class="card">
-      <h2>Registrar Elemento</h2>
-      <form id="item-form" data-testid="item-form">
+    <section class="card" id="login-section" data-testid="login-section">
+      <h2>Iniciar Sesión</h2>
+      <form id="login-form" data-testid="login-form">
         <div class="field">
-          <label for="title">Título</label>
-          <input id="title" name="title" data-testid="input-title" type="text" placeholder="Ej. Despliegue v1.0" required />
+          <label for="login-username">Usuario</label>
+          <input id="login-username" name="username" data-testid="login-username" type="text" placeholder="admin" required />
         </div>
         <div class="field">
-          <label for="description">Descripción</label>
-          <input id="description" name="description" data-testid="input-description" type="text" placeholder="Detalle breve" />
-        </div>
-        <div class="field">
-          <label for="status">Estado</label>
-          <select id="status" name="status" data-testid="select-status">
-            <option value="pending">Pendiente</option>
-            <option value="in_progress">En progreso</option>
-            <option value="done">Completado</option>
-          </select>
+          <label for="login-password">Contraseña</label>
+          <input id="login-password" name="password" data-testid="login-password" type="password" placeholder="••••••" required />
         </div>
         <div class="actions">
-          <button type="submit" data-testid="submit-btn">Agregar</button>
-          <button type="button" id="simulate-error-btn" data-testid="simulate-error-btn" class="danger-outline">
-            Simular Error 500
-          </button>
+          <button type="submit" data-testid="login-submit-btn">Entrar</button>
         </div>
       </form>
-      <p id="feedback" data-testid="feedback" class="feedback" aria-live="polite"></p>
+      <p id="login-feedback" data-testid="login-feedback" class="feedback" aria-live="polite"></p>
     </section>
 
-    <section class="card">
-      <div class="list-header">
-        <h2>Elementos Registrados</h2>
-        <span id="items-count" data-testid="items-count">0 elementos</span>
-      </div>
-      <ul id="items-list" data-testid="items-list" class="items-list"></ul>
+    <section id="app-section" data-testid="app-section" class="hidden">
+      <section class="card">
+        <div class="list-header">
+          <h2 id="form-title" data-testid="form-title">Crear Usuario</h2>
+          <span id="current-user-label" data-testid="current-user-label" class="subtitle"></span>
+        </div>
+        <form id="user-form" data-testid="user-form">
+          <input type="hidden" id="edit-user-id" value="" />
+          <div class="grid-two">
+            <div class="field">
+              <label for="username">Usuario</label>
+              <input id="username" name="username" data-testid="input-username" type="text" placeholder="ej. jdoe" required />
+            </div>
+            <div class="field">
+              <label for="email">Correo electrónico</label>
+              <input id="email" name="email" data-testid="input-email" type="email" placeholder="ej. jdoe@correo.com" required />
+            </div>
+            <div class="field">
+              <label for="full_name">Nombre completo</label>
+              <input id="full_name" name="full_name" data-testid="input-fullname" type="text" placeholder="ej. Juan Pérez" required />
+            </div>
+            <div class="field">
+              <label for="role">Rol</label>
+              <select id="role" name="role" data-testid="select-role">
+                <option value="user">Usuario</option>
+                <option value="admin">Administrador</option>
+                <option value="viewer">Visor</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="password">Contraseña <span id="password-hint" class="subtitle">(mínimo 6 caracteres)</span></label>
+            <input id="password" name="password" data-testid="input-password" type="password" placeholder="••••••" />
+          </div>
+          <div class="actions">
+            <button type="submit" id="submit-user-btn" data-testid="submit-user-btn">Guardar Usuario</button>
+            <button type="button" id="cancel-edit-btn" data-testid="cancel-edit-btn" class="secondary-outline hidden">Cancelar Edición</button>
+            <button type="button" id="simulate-error-btn" data-testid="simulate-error-btn" class="danger-outline">
+              Simular Error 500
+            </button>
+          </div>
+        </form>
+        <p id="feedback" data-testid="feedback" class="feedback" aria-live="polite"></p>
+      </section>
+
+      <section class="card">
+        <div class="list-header">
+          <h2>Usuarios Registrados</h2>
+          <span id="users-count" data-testid="users-count">0 usuarios</span>
+        </div>
+        <ul id="users-list" data-testid="users-list" class="items-list"></ul>
+      </section>
     </section>
   </main>
 
