@@ -111,17 +111,23 @@ jobs:
     if: github.ref == 'refs/heads/main' && success()
     steps:
       - name: Deploy containers via SSH to EC2
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd ${{ secrets.EC2_APP_DIR || '~/proyecto-parcial2-cicd' }}
-            git fetch origin main
-            git reset --hard origin/main
-            docker compose up -d --build
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          EC2_APP_DIR: ${{ secrets.EC2_APP_DIR }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$EC2_SSH_KEY" | tr -d '\r' > ~/.ssh/ec2_key
+          chmod 600 ~/.ssh/ec2_key
+          APP_DIR="${EC2_APP_DIR:-~/proyecto-parcial2-cicd}"
+          ssh -i ~/.ssh/ec2_key -o StrictHostKeyChecking=no "${EC2_USER}@${EC2_HOST}" "
+            cd ${APP_DIR} &&
+            git fetch origin main &&
+            git reset --hard origin/main &&
+            docker compose up -d --build &&
             docker compose ps
+          "
 
       - name: Report Deploy Event to OpenObserve
         if: always()
