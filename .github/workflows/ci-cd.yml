@@ -118,7 +118,11 @@ jobs:
           EC2_APP_DIR: ${{ secrets.EC2_APP_DIR }}
         run: |
           mkdir -p ~/.ssh
-          printf '%s\n' "$EC2_SSH_KEY" | tr -d '\r' > ~/.ssh/ec2_key
+          if echo "$EC2_SSH_KEY" | grep -q "BEGIN "; then
+            printf '%s\n' "$EC2_SSH_KEY" | tr -d '\r' > ~/.ssh/ec2_key
+          else
+            printf '%s' "$EC2_SSH_KEY" | tr -d ' \r\n' | base64 -d > ~/.ssh/ec2_key
+          fi
           chmod 600 ~/.ssh/ec2_key
           APP_DIR="${EC2_APP_DIR:-~/proyecto-parcial2-cicd}"
           ssh -i ~/.ssh/ec2_key -o StrictHostKeyChecking=no "${EC2_USER}@${EC2_HOST}" "
