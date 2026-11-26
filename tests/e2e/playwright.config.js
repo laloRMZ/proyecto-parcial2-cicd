@@ -20,6 +20,7 @@ const e2eDbPath = path.join(rootDir, "data", "e2e_test.db");
 module.exports = defineConfig({
   testDir: __dirname,
   timeout: 30000,
+  workers: 2,
   retries: process.env.CI ? 1 : 0,
   use: {
     baseURL: "http://127.0.0.1:8000",
